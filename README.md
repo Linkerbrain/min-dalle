@@ -1,3 +1,5 @@
+This is a fork of min(DALL·E), modified so the model only gets loaded once and is compatible with cuda.
+
 # min(DALL·E)
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/kuprel/min-dalle/blob/main/min_dalle.ipynb)
@@ -13,22 +15,16 @@ Run `sh setup.sh` to install dependencies and download pretrained models.  In th
 
 ### Usage
 
-Use the command line python script `image_from_text.py` to generate images. Here are some examples:
+Use the command line
 
 ```
-python image_from_text.py --text='alien life' --seed=7
-```
-![Alien](examples/alien.png)
-
-
-```
-python image_from_text.py --text='a comfy chair that looks like an avocado' --mega --seed=4
-```
-![Avocado Armchair](examples/avocado_armchair.png)
-
-
-```
-python image_from_text.py --text='court sketch of godzilla on trial' --mega --seed=100
+python main.py
 ```
 
-![Godzilla Trial](examples/godzilla_trial.png)
+and choose your prompt when it prompts you to
+
+
+if you have giant gpu you can do
+```
+python main.py --mega
+```

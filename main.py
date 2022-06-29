@@ -14,7 +14,7 @@ parser.add_argument('--mega', action='store_true')
 parser.add_argument('--no-mega', dest='mega', action='store_false')
 parser.set_defaults(mega=False)
 
-parser.add_argument('--seed', type=int, default=69)
+parser.add_argument('--seed', type=int, default=7)
 
 """
 Main helpers
