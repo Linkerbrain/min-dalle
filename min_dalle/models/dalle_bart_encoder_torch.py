@@ -43,8 +43,8 @@ class AttentionTorch(nn.Module):
     ) -> FloatTensor:
         attention_bias = torch.where(
             attention_mask,
-            torch.full(attention_mask.shape, 0.0),
-            torch.full(attention_mask.shape, -torch.inf),
+            torch.full(attention_mask.shape, 0.0, device=attention_mask.device),
+            torch.full(attention_mask.shape, -torch.inf, device=attention_mask.device),
         )
         attention_weights: FloatTensor = torch.einsum(
             'bqhc,bkhc->bhqk',

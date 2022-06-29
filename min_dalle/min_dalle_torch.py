@@ -18,7 +18,8 @@ def encode_torch(
     text_tokens: LongTensor,
     config: dict, 
     params: dict
-) -> FloatTensor:
+):
+
     print("loading torch encoder")
     encoder = DalleBartEncoderTorch(
         layer_count = config['encoder_layers'],
@@ -33,12 +34,14 @@ def encode_torch(
         layer_count=config['encoder_layers'], 
         is_encoder=True
     )
+
     encoder.load_state_dict(encoder_params, strict=False)
     del encoder_params
 
     print("encoding text tokens")
     encoder_state = encoder(text_tokens)
     del encoder
+
     return encoder_state
 
 
@@ -63,17 +66,20 @@ def decode_torch(
         start_token = config['decoder_start_token_id'],
         is_verbose = True
     )
+
     decoder_params = convert_dalle_bart_torch_from_flax_params(
         params.pop('decoder'), 
         layer_count=config['decoder_layers'],
         is_encoder=False
     )
+
     decoder.load_state_dict(decoder_params, strict=False)
     del decoder_params
 
     print("sampling image tokens")
     torch.manual_seed(seed)
     image_tokens = decoder.forward(text_tokens, encoder_state)
+
     return image_tokens
 
 
@@ -91,6 +97,7 @@ def generate_image_tokens_torch(
         config, 
         params
     )
+
     image_tokens = decode_torch(
         text_tokens, 
         encoder_state, 
@@ -105,9 +112,12 @@ def generate_image_tokens_torch(
 def detokenize_torch(image_tokens: LongTensor) -> numpy.ndarray:
     print("detokenizing image")
     model_path = './pretrained/vqgan'
+
     params = load_vqgan_torch_params(model_path)
+
     detokenizer = VQGanDetokenizer()
     detokenizer.load_state_dict(params)
     image = detokenizer.forward(image_tokens).to(torch.uint8)
+
     return image.detach().numpy()
     

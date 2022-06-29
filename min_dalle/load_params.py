@@ -2,16 +2,17 @@ import os
 import numpy
 from copy import deepcopy
 from typing import Dict
-from flax import traverse_util, serialization
 import torch
 torch.no_grad()
-
+# from flax import traverse_util, serialization
+import min_dalle.fakeflax as serialization
+from min_dalle.fakeflax import flatten_dict
 
 def load_vqgan_torch_params(path: str) -> Dict[str, torch.Tensor]:
     with open(os.path.join(path, 'flax_model.msgpack'), "rb") as f:
         params: Dict[str, numpy.ndarray] = serialization.msgpack_restore(f.read())
 
-    P: Dict[str, numpy.ndarray] = traverse_util.flatten_dict(params, sep='.')
+    P: Dict[str, numpy.ndarray] = flatten_dict(params, sep='.')
 
     for i in list(P.keys()):
         j = i
@@ -30,7 +31,7 @@ def load_vqgan_torch_params(path: str) -> Dict[str, torch.Tensor]:
 
     for i in P:
         P[i] = torch.tensor(P[i])
-        # if torch.cuda.is_available(): P[i] = P[i].cuda()
+        if torch.cuda.is_available(): P[i] = P[i].cuda()
 
     P['embedding.weight'] = P.pop('quantize.embedding.embedding')
 
@@ -83,11 +84,11 @@ def convert_dalle_bart_torch_from_flax_params(
     is_encoder: bool
 ) -> dict:
     P = deepcopy(params)
-    P: Dict[str, numpy.ndarray] = traverse_util.flatten_dict(P, sep='.')
+    P: Dict[str, numpy.ndarray] = flatten_dict(P, sep='.')
 
     for i in P:
         P[i] = torch.tensor(P[i])
-        # if torch.cuda.is_available(): P[i] = P[i].cuda()
+        if torch.cuda.is_available(): P[i] = P[i].cuda()
 
     for i in list(P):
         if 'kernel' in i:
